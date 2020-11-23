@@ -20,16 +20,30 @@ def index():
     return render_template("index.html", todo_list=todo_list)
 
 
+@app.route("/add", methods=["POST"])
 def add():
-    pass
+    title = request.form.get("title")
+    new_todo = Todo(title=title, complete=False)
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for("index")) #recharger la page après ajout d'une tâche, c'est implicit index.html
+    #pass
 
-
+@app.route("/complete/<string:todo_id>")
 def complete(todo_id):
-    pass
+    todo = Todo.query.filter_by(id=todo_id).first() #chercher le todo dans la bdd
+    todo.complete = not todo.complete 
+    db.session.commit() #enregistrer
+    return redirect(url_for("index")) #revenir sur page d'accueil
+    #pass
 
-
+@app.route("/delete/<string:todo_id>")
 def delete(todo_id):
-    pass
+    todo = Todo.query.filter_by(id=todo_id).first()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for("index"))
+    #pass
 
 
 if __name__ == "__main__":
